@@ -1,6 +1,8 @@
 package controllers;
+
 import java.io.IOException;
 
+import javax.persistence.EntityManager;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,36 +11,38 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import models.Tasks;
-
+import utils.DBUtil;
 
 /**
- * Servlet implementation class NewServlet
+ * Servlet implementation class ShowServlet
  */
-@WebServlet("/new")
-public class NewServlet extends HttpServlet {
+@WebServlet("/show")
+public class ShowServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public NewServlet() {
+    public ShowServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+
+
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // TODO Auto-generated method stub
-        request.setAttribute("_token", request.getSession().getId());
+        EntityManager em = DBUtil.createEntityManager();
+        Tasks ta = em.find(Tasks.class, Integer.parseInt(request.getParameter("id")));
+        em.close();
 
+        request.setAttribute("tasks", ta);
 
-        request.setAttribute("tasks", new Tasks());
-
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/new.jsp");
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/show.jsp");
         rd.forward(request, response);
-     }
 }
-
-
+}
