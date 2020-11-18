@@ -35,12 +35,32 @@ public class IndexServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // TODO Auto-generated method stub
         EntityManager em = DBUtil.createEntityManager();
-        List<Tasks> tasks = em.createNamedQuery("getAllTasks", Tasks.class)
-                .getResultList();
+        int page = 1;
+        try {
+            page = Integer.parseInt(request.getParameter("page"));
+        } catch(NumberFormatException e) {}
 
+
+        List<Tasks> tasks = em.createNamedQuery("getAllTasks", Tasks.class)
+                                   .setFirstResult(15 * (page - 1))
+                                   .setMaxResults(15)
+                                   .getResultList();
+
+        // 全件数を取得
+        long tasks_count = (long)em.createNamedQuery("getTasksCount", Long.class)
+                                      .getSingleResult();
 
         em.close();
+
         request.setAttribute("a", tasks);
+        request.setAttribute("tasks_count", tasks_count);     // 全件数
+        request.setAttribute("page", page);
+
+
+        if(request.getSession().getAttribute("flush") != null) {
+            request.setAttribute("flush", request.getSession().getAttribute("flush"));
+            request.getSession().removeAttribute("flush");
+        }
 
     RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/index.jsp");
     rd.forward(request, response);
