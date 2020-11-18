@@ -23,7 +23,7 @@ public static List<String> validate(Tasks ta){
 
 
 private static String _validateContent(String content) {
-    if(content == null || content.equals("")) {
+    if(content == null || content.trim().equals("")) {
         return "メッセージを入力してください。";
     }
 
